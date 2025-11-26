@@ -1,0 +1,3 @@
+loyalty ve payment için ilgili db leri prjeye baðla, 
+notification için ise projede apsettings'e  yapýlandýrmasýný yap
+dockerfile, docker compose çalýþtýr, swagger uý,documantation ve healhtcheck ekle

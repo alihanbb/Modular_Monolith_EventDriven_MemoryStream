@@ -1,0 +1,38 @@
+services:
+  payment-db:
+    image: postgres:16-alpine
+    container_name: payment-postgres
+    environment:
+      POSTGRES_DB: paymentdb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
+    ports:
+      - "5492:5432"
+    volumes:
+      - payment-data:/var/lib/postgresql/data
+  
+    networks:
+      - ecommerce-network
+
+  loyalty-db:
+    image: postgres:16-alpine
+    container_name: loyalty-postgres
+    environment:
+      POSTGRES_DB: loyaltydb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
+    ports:
+      - "5482:5432"
+    volumes:
+      - loyalty-data:/var/lib/postgresql/data
+   
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
+
+volumes:
+  payment-data:
+  loyalty-data:
