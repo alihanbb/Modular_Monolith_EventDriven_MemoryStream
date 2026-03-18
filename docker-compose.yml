@@ -1,38 +1,52 @@
 services:
-  payment-db:
-    image: postgres:16-alpine
-    container_name: payment-postgres
-    environment:
-      POSTGRES_DB: paymentdb
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
-    ports:
-      - "5492:5432"
-    volumes:
-      - payment-data:/var/lib/postgresql/data
-  
-    networks:
-      - ecommerce-network
-
-  loyalty-db:
-    image: postgres:16-alpine
-    container_name: loyalty-postgres
-    environment:
-      POSTGRES_DB: loyaltydb
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD:  ${POSTGRES_PASSWORD}
-    ports:
-      - "5482:5432"
-    volumes:
-      - loyalty-data:/var/lib/postgresql/data
+    modular-monolith-db:
+        image: postgres:16-alpine
+        container_name: modular-monolith-postgres
+        environment:
+            POSTGRES_USER: postgres-modular
+            POSTGRES_PASSWORD: Password12*
+            POSTGRES_DB: modular_monolith_db
+        ports:
+          - 5492:5432
+        volumes:
+          - modular-monolith-db-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres-modular -d modular_monolith_db"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
    
-    networks:
-      - ecommerce-network
 
-networks:
-  ecommerce-network:
-    driver: bridge
+    pgadmin:
+        image: dpage/pgadmin4:latest
+        container_name: modular-monolith-pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+        ports:
+            - 8090:80
+        volumes:
+           - modular-monolith-pgadmin-data:/var/lib/pgadmin
+        depends_on:
+            modular-monolith-db:
+                condition: service_healthy
+        restart: always
+
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        container_name: modular-monolith-jaeger
+        environment:
+            COLLECTOR_OTLP_ENABLED: "true"
+
+        ports:
+            - "16686:16686"   
+            - "4317:4317"     
+            - "4318:4318"     
+        volumes:
+            - modular-monolith-jaeger-data:/data
+        restart: unless-stopped
 
 volumes:
-  payment-data:
-  loyalty-data:
+    modular-monolith-db-data:
+    modular-monolith-pgadmin-data:
+    modular-monolith-jaeger-data:

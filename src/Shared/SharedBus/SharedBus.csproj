@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>ModularMonolith.Shared.Bus</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    FrameworkReference: Microsoft.Extensions.DependencyInjection, Hosting, Logging
+    gibi ASP.NET Core bileşenlerine ayrı paket eklemeden erişim sağlar.
+  -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>
