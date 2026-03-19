@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: modular-monolith-postgres
+  namespace: modular-monolith-system
+  labels:
+    app.kubernetes.io/name: modular-monolith-postgres
+    app.kubernetes.io/component: database
+spec:
+  serviceName: modular-monolith-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: modular-monolith-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: modular-monolith-postgres
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: modular-monolith-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: modular-monolith-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: modular-monolith-secret
+                  key: POSTGRES_DB
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres-modular", "-d", "modular_monolith_db"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres-modular", "-d", "modular_monolith_db"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: modular-monolith-postgres
+  namespace: modular-monolith-system
+  labels:
+    app.kubernetes.io/name: modular-monolith-postgres
+    app.kubernetes.io/component: database
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: modular-monolith-postgres
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: modular-monolith-project
+  namespace: argocd
+  labels:
+    app.kubernetes.io/managed-by: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "ArgoCD project for Modular Monolith application"
+  sourceRepos:
+    - https://github.com/alihanbb/Modular_Monolith_EventDriven_MemoryStream.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: modular-monolith-system
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: "apps"
+      kind: Deployment
+    - group: "apps"
+      kind: StatefulSet
+    - group: ""
+      kind: Service
+    - group: ""
+      kind: ConfigMap
+    - group: ""
+      kind: Secret
+    - group: ""
+      kind: PersistentVolumeClaim
+    - group: "autoscaling"
+      kind: HorizontalPodAutoscaler
+  orphanedResources:
+    warn: true

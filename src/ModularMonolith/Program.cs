@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using ModularMonolith;
 using ModularMonolith.Modules.Loyalty;
 using ModularMonolith.Modules.Notification;
@@ -34,9 +35,24 @@ builder.Services.AddNotificationModule(
     builder.Environment
 );
 
+builder.Services.AddHealthChecks()
+    .AddNpgSql(
+        builder.Configuration.GetConnectionString("DefaultConnection")!,
+        tags: new[] { "ready" }
+    );
+
 
 var app = builder.Build();
 await app.MigrateAllDatabasesAsync();
+
+app.MapHealthChecks("/healthz/live", new HealthCheckOptions
+{
+    Predicate = _ => false
+});
+app.MapHealthChecks("/healthz/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready")
+});
 
 if (app.Environment.IsDevelopment())
 {
