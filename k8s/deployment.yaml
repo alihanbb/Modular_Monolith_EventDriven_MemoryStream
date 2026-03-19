@@ -34,6 +34,7 @@ spec:
           command: ['sh', '-c', 'until nc -z modular-monolith-postgres 5432; do echo "PostgreSQL bekleniyor..."; sleep 3; done']
           securityContext:
             runAsNonRoot: true
+            runAsUser: 1000
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
