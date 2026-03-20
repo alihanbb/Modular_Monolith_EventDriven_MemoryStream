@@ -69,6 +69,8 @@ app.MapHealthChecks("/health/db", new HealthCheckOptions
     Predicate = check => check.Tags.Contains("db")
 });
 
+app.MapGet("/", () => "Welcome to the Modular Monolith API! Explore the endpoints and enjoy the modular architecture.");
+
 app.UseHttpsRedirection();
 
 
