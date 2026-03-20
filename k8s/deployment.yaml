@@ -40,8 +40,8 @@ spec:
               drop: ["ALL"]
       containers:
         - name: modular-monolith-api
-          image: modular-monolith:latest
-          imagePullPolicy: Never
+          image: <DOCKERHUB_USERNAME>/modular-monolith:latest
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
