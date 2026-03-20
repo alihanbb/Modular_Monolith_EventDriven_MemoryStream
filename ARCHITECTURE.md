@@ -1,8 +1,8 @@
-# Modular Monolith Mimarisi
+# Modular Monolith Architecture
 
-## Genel Bakış
+## Overview
 
-Bu proje, başlangıçta **mikroservis** olarak tasarlanmış bir e-ticaret platformunun **modular monolith** mimarisine dönüştürülmüş halidir. Tek bir ASP.NET Core uygulaması içinde birbirinden izole modüller barındırır; modüller arası iletişim ise harici bir message broker gerektirmeyen **InMemory EventBus** aracılığıyla sağlanır.
+This project transforms a **microservice**-designed e-commerce platform into a **modular monolith** architecture. It features a single ASP.NET Core application with strictly isolated modules (`Payment`, `Loyalty`, `Notification`). Each module has its own `DbContext` and PostgreSQL schema (e.g., `payment.Payments`, `loyalty.UserPoints`). Modules do not reference each other directly; they communicate through shared events.
 
 ---
 
@@ -143,29 +143,4 @@ Schema izolasyonu sayesinde modüller birbirinin tablolarına doğrudan erişeme
 | Veritabanı | PostgreSQL 16 |
 | Container | Docker + Docker Compose |
 
----
 
-## Çalıştırma
-
-### Docker ile
-```bash
-# Yeni docker-compose dosyasını kullan
-docker-compose -f docker-compose.modular.yml up -d
-```
-
-### Yerel geliştirme
-```bash
-cd src/ModularMonolith
-dotnet run
-# API: http://localhost:5000
-# Swagger: http://localhost:5000/openapi
-```
-
-### Migration oluşturma
-```bash
-# Payment migration
-dotnet ef migrations add InitialCreate --context PaymentDbContext --output-dir Modules/Payment/Infrastructure/Persistence/Migrations
-
-# Loyalty migration
-dotnet ef migrations add InitialCreate --context LoyaltyDbContext --output-dir Modules/Loyalty/Infrastructure/Persistence/Migrations
-```

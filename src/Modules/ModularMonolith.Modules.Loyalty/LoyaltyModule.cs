@@ -21,9 +21,10 @@ public static class LoyaltyModule
         services.AddDbContext<LoyaltyDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddEventHandler<PaymentSucceededEvent, PaymentSucceededEventHandler>();
+        services.AddInboxEventHandler<PaymentSucceededEvent, PaymentSucceededEventHandler, LoyaltyDbContext>();
 
         services.AddOutbox<LoyaltyDbContext>();
+        services.AddInbox<LoyaltyDbContext>();
 
         services.AddSingleton<IMigratable>(new DbContextMigratable<LoyaltyDbContext>());
 

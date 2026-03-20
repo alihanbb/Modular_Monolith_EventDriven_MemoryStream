@@ -64,6 +64,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.MapHealthChecks("/health/db", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("db")
+});
+
 app.UseHttpsRedirection();
 
 

@@ -10,6 +10,7 @@ internal class LoyaltyDbContext : DbContext
 
     public DbSet<UserPoints> UserPoints { get; set; } = null!;
     public DbSet<OutboxMessage> OutboxMessages { get; set; } = null!;
+    public DbSet<InboxMessage> InboxMessages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,6 +37,16 @@ internal class LoyaltyDbContext : DbContext
             entity.Property(e => e.EventType).IsRequired().HasMaxLength(500);
             entity.Property(e => e.Payload).IsRequired();
             entity.Property(e => e.CreatedAt).IsRequired();
+            entity.HasIndex(e => e.ProcessedAt);
+        });
+
+        modelBuilder.Entity<InboxMessage>(entity =>
+        {
+            entity.ToTable("inbox_messages");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.EventType).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Payload).IsRequired();
+            entity.Property(e => e.ReceivedAt).IsRequired();
             entity.HasIndex(e => e.ProcessedAt);
         });
     }

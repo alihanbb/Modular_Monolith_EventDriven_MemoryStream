@@ -31,5 +31,38 @@ public static class EventBusServiceExtensions
             new EventHandlerWrapper<TEvent>(sp.GetRequiredService<THandler>()));
         return services;
     }
+
+    /// <summary>
+    /// Inbox pattern ile event handler kaydeder.
+    /// EventBusBackgroundService → InboxSaverWrapper (DB'ye yazar)
+    /// InboxProcessorService → InboxHandlerWrapper → THandler (gerçek işlem)
+    /// </summary>
+    public static IServiceCollection AddInboxEventHandler<TEvent, THandler, TDbContext>(
+        this IServiceCollection services)
+        where TEvent : class, IEvent
+        where THandler : class, IEventHandler<TEvent>
+        where TDbContext : DbContext
+    {
+        // EventBusBackgroundService tarafından çağrılır — event'i inbox tablosuna yazar
+        services.AddSingleton<IEventHandlerWrapper>(sp =>
+            new InboxSaverWrapper<TEvent, TDbContext>(sp, sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<InboxSaverWrapper<TEvent, TDbContext>>>()));
+
+        // InboxProcessorService tarafından çağrılır — gerçek iş mantığını çalıştırır
+        services.AddScoped<THandler>();
+        services.AddScoped<IInboxHandlerWrapper>(sp =>
+            new InboxHandlerWrapper<TEvent>(sp.GetRequiredService<THandler>()));
+
+        return services;
+    }
+
+    /// <summary>
+    /// Belirtilen DbContext için InboxProcessorService background service'ini kaydeder.
+    /// </summary>
+    public static IServiceCollection AddInbox<TDbContext>(this IServiceCollection services)
+        where TDbContext : DbContext
+    {
+        services.AddHostedService<InboxProcessorService<TDbContext>>();
+        return services;
+    }
 }
 
