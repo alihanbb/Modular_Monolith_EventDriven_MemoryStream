@@ -54,15 +54,13 @@ app.MapHealthChecks("/healthz/ready", new HealthCheckOptions
     Predicate = check => check.Tags.Contains("ready")
 });
 
-if (app.Environment.IsDevelopment())
+// Swagger is always enabled for this GitOps test
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Modular Monolith API v1");
-        options.RoutePrefix = string.Empty;
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Modular Monolith API v1");
+    options.RoutePrefix = string.Empty;
+});
 
 app.MapHealthChecks("/health/db", new HealthCheckOptions
 {
@@ -70,6 +68,7 @@ app.MapHealthChecks("/health/db", new HealthCheckOptions
 });
 
 app.MapGet("/", () => "Welcome to the Modular Monolith API! Explore the endpoints and enjoy the modular architecture.");
+app.MapGet("/gitops-test", () => new { Message = "GitOps Cycle Successful!", Timestamp = DateTime.UtcNow, Version = "1.0.1" });
 
 app.UseHttpsRedirection();
 
