@@ -40,7 +40,7 @@ spec:
               drop: ["ALL"]
       containers:
         - name: modular-monolith-api
-          image: alihanbb/modular-monolith:sha-57e9276438bcf51f4b8e4e01986d2a343f5f68ca
+          image: alihanbb/modular-monolith:sha-d9cf991b914fd3e53c174fa0905ae17c18165e9f
           imagePullPolicy: Always
           ports:
             - name: http
