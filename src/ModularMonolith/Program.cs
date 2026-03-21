@@ -68,7 +68,7 @@ app.MapHealthChecks("/health/db", new HealthCheckOptions
 });
 
 app.MapGet("/", () => "Welcome to the Modular Monolith API! Explore the endpoints and enjoy the modular architecture.");
-app.MapGet("/gitops-test", () => new { Message = "GitOps Cycle Successful!", Timestamp = DateTime.UtcNow, Version = "1.0.1" });
+app.MapGet("/gitops-test", () => new { Message = "GitOps Cycle Successful with Rebase Fix!", Timestamp = DateTime.UtcNow, Version = "1.0.2" });
 
 app.UseHttpsRedirection();
 
