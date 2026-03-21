@@ -40,7 +40,7 @@ spec:
               drop: ["ALL"]
       containers:
         - name: modular-monolith-api
-          image: <DOCKERHUB_USERNAME>/modular-monolith:latest
+          image: alihanbb/modular-monolith:sha-57e9276438bcf51f4b8e4e01986d2a343f5f68ca
           imagePullPolicy: Always
           ports:
             - name: http
