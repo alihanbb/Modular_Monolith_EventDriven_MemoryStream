@@ -6,7 +6,7 @@ services:
         image: modular-monolith:latest
         container_name: modular-monolith-app
         ports:
-            - 8080:8080
+            - ${APP_PORT}:8080
         depends_on:    
             modular-monolith-db:
                 condition: service_healthy
@@ -18,15 +18,15 @@ services:
         image: postgres:16-alpine
         container_name: modular-monolith-postgres
         environment:
-            POSTGRES_USER: postgres-modular
-            POSTGRES_PASSWORD: Password12*
-            POSTGRES_DB: modular_monolith_db
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
         ports:
-          - 5492:5432
+          - ${DB_PORT}:5432
         volumes:
           - modular-monolith-db-data:/var/lib/postgresql/data
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U postgres-modular -d modular_monolith_db"]
+            test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
             interval: 10s
             timeout: 5s
             retries: 3
@@ -36,10 +36,10 @@ services:
         image: dpage/pgadmin4:latest
         container_name: modular-monolith-pgadmin
         environment:
-            PGADMIN_DEFAULT_EMAIL: admin@admin.com
-            PGADMIN_DEFAULT_PASSWORD: admin
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
         ports:
-            - 8090:80
+            - ${PGADMIN_PORT}:80
         volumes:
            - modular-monolith-pgadmin-data:/var/lib/pgadmin
         depends_on:
@@ -54,9 +54,9 @@ services:
             COLLECTOR_OTLP_ENABLED: "true"
 
         ports:
-            - "16686:16686"   
-            - "4317:4317"     
-            - "4318:4318"     
+            - "${JAEGER_UI_PORT}:16686"   
+            - "${JAEGER_OTLP_GRPC_PORT}:4317"     
+            - "${JAEGER_OTLP_HTTP_PORT}:4318"     
         volumes:
             - modular-monolith-jaeger-data:/data
         restart: unless-stopped
